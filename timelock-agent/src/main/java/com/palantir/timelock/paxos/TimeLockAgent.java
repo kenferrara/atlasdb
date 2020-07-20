@@ -108,7 +108,7 @@ public class TimeLockAgent {
                 blockingTimeoutMs,
                 registrar,
                 undertowRegistrar,
-                "0.000.0");
+                "0.0.0");
     }
 
     public static TimeLockAgent createWithVersion(MetricsManager metricsManager,
