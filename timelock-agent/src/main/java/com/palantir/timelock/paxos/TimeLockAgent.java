@@ -58,10 +58,10 @@ import com.palantir.conjure.java.api.config.service.ServicesConfigBlock;
 import com.palantir.conjure.java.api.config.service.UserAgent;
 import com.palantir.conjure.java.undertow.lib.UndertowService;
 import com.palantir.dialogue.clients.DialogueClients;
-import com.palantir.leader.LeaderElectionConstants;
 import com.palantir.lock.LockService;
 import com.palantir.paxos.Client;
 import com.palantir.refreshable.Refreshable;
+import com.palantir.sls.versions.OrderableSlsVersion;
 import com.palantir.timelock.config.DatabaseTsBoundPersisterConfiguration;
 import com.palantir.timelock.config.PaxosTsBoundPersisterConfiguration;
 import com.palantir.timelock.config.TimeLockInstallConfiguration;
@@ -92,27 +92,7 @@ public class TimeLockAgent {
     private LeaderPingHealthCheck healthCheck;
     private TimelockNamespaces namespaces;
 
-    public static TimeLockAgent create(
-            MetricsManager metricsManager,
-            TimeLockInstallConfiguration install,
-            Supplier<TimeLockRuntimeConfiguration> runtime,
-            UserAgent userAgent,
-            int threadPoolSize,
-            long blockingTimeoutMs,
-            Consumer<Object> registrar,
-            Optional<Consumer<UndertowService>> undertowRegistrar) {
-        return createWithVersion(metricsManager,
-                install,
-                runtime,
-                userAgent,
-                threadPoolSize,
-                blockingTimeoutMs,
-                registrar,
-                undertowRegistrar,
-                LeaderElectionConstants.DEFAULT_TIMELOCK_VERSION);
-    }
-
-    public static TimeLockAgent createWithVersion(MetricsManager metricsManager,
+    public static TimeLockAgent create(MetricsManager metricsManager,
             TimeLockInstallConfiguration install,
             Supplier<TimeLockRuntimeConfiguration> runtime,
             UserAgent userAgent,
@@ -120,7 +100,7 @@ public class TimeLockAgent {
             long blockingTimeoutMs,
             Consumer<Object> registrar,
             Optional<Consumer<UndertowService>> undertowRegistrar,
-            String timeLockVersion) {
+            Optional<OrderableSlsVersion> timeLockVersion) {
         ExecutorService executor = createSharedExecutor();
         TimeLockDialogueServiceProvider timeLockDialogueServiceProvider = createTimeLockDialogueServiceProvider(
                 metricsManager, install, userAgent);
