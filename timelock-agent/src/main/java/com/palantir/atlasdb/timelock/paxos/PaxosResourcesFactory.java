@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import org.immutables.value.Value;
 
 import com.google.common.base.Suppliers;
+import com.palantir.atlasdb.factory.TransactionManagers;
 import com.palantir.atlasdb.timelock.paxos.NetworkClientFactories.Factory;
 import com.palantir.atlasdb.util.MetricsManager;
 import com.palantir.common.proxy.PredicateSwitchedProxy;
@@ -57,6 +58,17 @@ public final class PaxosResourcesFactory {
 
     public static PaxosResources create(
             TimelockPaxosInstallationContext install,
+            MetricsManager metrics,
+            Supplier<PaxosRuntimeConfiguration> paxosRuntime,
+            ExecutorService sharedExecutor) {
+        return createWithVersion(install,
+                metrics,
+                paxosRuntime,
+                sharedExecutor,
+                TransactionManagers.DEFAULT_TIMELOCK_VERSION);
+    }
+
+    public static PaxosResources createWithVersion(TimelockPaxosInstallationContext install,
             MetricsManager metrics,
             Supplier<PaxosRuntimeConfiguration> paxosRuntime,
             ExecutorService sharedExecutor,
