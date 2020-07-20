@@ -82,6 +82,7 @@ public class PaxosTimestampBoundStoreTest {
             ImmutableSequenceAndBound.of(1, FORTY_TWO);
 
     private static final RuntimeException EXCEPTION = new RuntimeException("exception");
+    private static final String TIMELOCK_VERSION = "0.000.0";
 
     private final ExecutorService executor = PTExecutors.newCachedThreadPool();
     private final List<PaxosLearner> learners = Lists.newArrayList();
@@ -117,7 +118,8 @@ public class PaxosTimestampBoundStoreTest {
                     Paths.get(root, i + "legacy"),
                     SqliteConnections.getPooledDataSource(Paths.get(root, i + "sqlite")),
                     UUID.randomUUID(),
-                    true);
+                    true,
+                    TIMELOCK_VERSION);
 
             AtomicBoolean failureController = new AtomicBoolean(false);
             failureToggles.add(failureController);

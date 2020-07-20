@@ -100,6 +100,26 @@ public class TimeLockAgent {
             long blockingTimeoutMs,
             Consumer<Object> registrar,
             Optional<Consumer<UndertowService>> undertowRegistrar) {
+        return createWithVersion(metricsManager,
+                install,
+                runtime,
+                userAgent,
+                threadPoolSize,
+                blockingTimeoutMs,
+                registrar,
+                undertowRegistrar,
+                "0.000.0");
+    }
+
+    public static TimeLockAgent createWithVersion(MetricsManager metricsManager,
+            TimeLockInstallConfiguration install,
+            Supplier<TimeLockRuntimeConfiguration> runtime,
+            UserAgent userAgent,
+            int threadPoolSize,
+            long blockingTimeoutMs,
+            Consumer<Object> registrar,
+            Optional<Consumer<UndertowService>> undertowRegistrar,
+            String timeLockVersion) {
         ExecutorService executor = createSharedExecutor();
         TimeLockDialogueServiceProvider timeLockDialogueServiceProvider = createTimeLockDialogueServiceProvider(
                 metricsManager, install, userAgent);
@@ -110,7 +130,8 @@ public class TimeLockAgent {
                 installationContext,
                 metricsManager,
                 Suppliers.compose(TimeLockRuntimeConfiguration::paxos, runtime::get),
-                executor);
+                executor,
+                timeLockVersion);
 
         TimeLockAgent agent = new TimeLockAgent(
                 metricsManager,

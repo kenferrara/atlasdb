@@ -59,11 +59,12 @@ public final class PaxosResourcesFactory {
             TimelockPaxosInstallationContext install,
             MetricsManager metrics,
             Supplier<PaxosRuntimeConfiguration> paxosRuntime,
-            ExecutorService sharedExecutor) {
+            ExecutorService sharedExecutor,
+            String timeLockVersion) {
         PaxosRemoteClients remoteClients = ImmutablePaxosRemoteClients.of(install, metrics);
 
         ImmutablePaxosResources.Builder resourcesBuilder = setupTimestampResources(
-                install, metrics, paxosRuntime, sharedExecutor, remoteClients);
+                install, metrics, paxosRuntime, sharedExecutor, remoteClients, timeLockVersion);
 
         if (install.useLeaderForEachClient()) {
             return configureLeaderForEachClient(
@@ -184,7 +185,8 @@ public final class PaxosResourcesFactory {
             MetricsManager metrics,
             Supplier<PaxosRuntimeConfiguration> paxosRuntime,
             ExecutorService sharedExecutor,
-            PaxosRemoteClients remoteClients) {
+            PaxosRemoteClients remoteClients,
+            String timeLockVersion) {
         TimelockPaxosMetrics timelockMetrics =
                 TimelockPaxosMetrics.of(PaxosUseCase.TIMESTAMP, metrics);
 
@@ -194,7 +196,8 @@ public final class PaxosResourcesFactory {
                 install.dataDirectory(),
                 install.sqliteDataSource(),
                 install.nodeUuid(),
-                install.install().paxos().canCreateNewClients());
+                install.install().paxos().canCreateNewClients(),
+                timeLockVersion);
 
         NetworkClientFactories batchClientFactories = ImmutableBatchingNetworkClientFactories.builder()
                 .useCase(PaxosUseCase.TIMESTAMP)
