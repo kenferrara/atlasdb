@@ -64,7 +64,12 @@ public final class PaxosResourcesFactory {
         PaxosRemoteClients remoteClients = ImmutablePaxosRemoteClients.of(install, metrics);
 
         ImmutablePaxosResources.Builder resourcesBuilder = setupTimestampResources(
-                install, metrics, paxosRuntime, sharedExecutor, remoteClients, timeLockVersion);
+                install,
+                metrics,
+                paxosRuntime,
+                sharedExecutor,
+                remoteClients,
+                timeLockVersion);
 
         if (install.useLeaderForEachClient()) {
             return configureLeaderForEachClient(
@@ -73,7 +78,8 @@ public final class PaxosResourcesFactory {
                     metrics,
                     paxosRuntime,
                     sharedExecutor,
-                    remoteClients);
+                    remoteClients,
+                    timeLockVersion);
         } else {
             return configureLeaderForAllClients(
                     resourcesBuilder,
@@ -81,7 +87,8 @@ public final class PaxosResourcesFactory {
                     metrics,
                     paxosRuntime,
                     sharedExecutor,
-                    remoteClients);
+                    remoteClients,
+                    timeLockVersion);
         }
     }
 
@@ -91,7 +98,8 @@ public final class PaxosResourcesFactory {
             MetricsManager metrics,
             Supplier<PaxosRuntimeConfiguration> paxosRuntime,
             ExecutorService sharedExecutor,
-            PaxosRemoteClients remoteClients) {
+            PaxosRemoteClients remoteClients,
+            String timeLockVersion) {
         TimelockPaxosMetrics timelockMetrics =
                 TimelockPaxosMetrics.of(PaxosUseCase.LEADER_FOR_EACH_CLIENT, metrics);
 
@@ -122,6 +130,7 @@ public final class PaxosResourcesFactory {
                 .leaderPingerFactoryBuilder(ImmutableBatchingLeaderPingerFactory.builder())
                 .healthCheckPingersFactory(healthCheckPingersFactory)
                 .latestRoundVerifierFactory(latestRoundVerifierFactory)
+                .timeLockVersion(timeLockVersion)
                 .build();
 
         return resourcesBuilder
@@ -137,7 +146,8 @@ public final class PaxosResourcesFactory {
             MetricsManager metrics,
             Supplier<PaxosRuntimeConfiguration> paxosRuntime,
             ExecutorService sharedExecutor,
-            PaxosRemoteClients remoteClients) {
+            PaxosRemoteClients remoteClients,
+            String timeLockVersion) {
         TimelockPaxosMetrics timelockMetrics =
                 TimelockPaxosMetrics.of(PaxosUseCase.LEADER_FOR_ALL_CLIENTS, metrics);
 
@@ -166,6 +176,7 @@ public final class PaxosResourcesFactory {
                 .leaderPingerFactoryBuilder(ImmutableSingleLeaderPingerFactory.builder())
                 .healthCheckPingersFactory(healthCheckPingersFactory)
                 .latestRoundVerifierFactory(latestRoundVerifierFactory)
+                .timeLockVersion(timeLockVersion)
                 .build();
 
         return resourcesBuilder
@@ -190,7 +201,7 @@ public final class PaxosResourcesFactory {
         TimelockPaxosMetrics timelockMetrics =
                 TimelockPaxosMetrics.of(PaxosUseCase.TIMESTAMP, metrics);
 
-        LocalPaxosComponents paxosComponents = LocalPaxosComponents.createWithBlockingMigration(
+        LocalPaxosComponents paxosComponents = LocalPaxosComponents.createWithBlockingMigrationWithVersion(
                 timelockMetrics,
                 PaxosUseCase.TIMESTAMP,
                 install.dataDirectory(),
