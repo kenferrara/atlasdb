@@ -98,7 +98,7 @@ public final class AutoDelegateProcessor extends AbstractProcessor {
     }
 
     @Override
-    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+    public boolean process(Set<? extends TypeElement> _annotations, RoundEnvironment roundEnv) {
         if (abortProcessing.get()) {
             // Another instance of AutoDelegateProcessor is running in the current processing environment.
             return false;
@@ -175,7 +175,7 @@ public final class AutoDelegateProcessor extends AbstractProcessor {
 
     private List<TypeElement> fetchSuperinterfaces(TypeElement baseInterface) {
         List<TypeMirror> interfacesQueue = new ArrayList<>(baseInterface.getInterfaces());
-        Set<TypeMirror> interfacesSet = Sets.newHashSet(interfacesQueue);
+        Set<TypeMirror> interfacesSet = new HashSet<>(interfacesQueue);
         List<TypeElement> superinterfaceElements = new ArrayList<>();
 
         for (int i = 0; i < interfacesQueue.size(); i++) {
